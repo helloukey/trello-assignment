@@ -1,6 +1,6 @@
 import Container from "@mui/material/Container";
-import AddProject from "../components/AddProject";
-import ProjectList from "../components/ProjectList";
+import AddProject from "../components/add/AddProject";
+import ProjectList from "../components/list/ProjectList";
 import PaginationComp from "../components/Pagination";
 
 type Props = {};

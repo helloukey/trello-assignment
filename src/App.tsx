@@ -13,24 +13,28 @@ const App = () => {
     <div className="App">
       <Navbar />
       <Routes>
+        {/* Home */}
         <Route
           path="/"
           element={
             currentUser ? <Home /> : <Navigate to="/login" replace={true} />
           }
         />
+        {/* Signup */}
         <Route
           path="/signup"
           element={
             !currentUser ? <Signup /> : <Navigate to="/" replace={true} />
           }
         />
+        {/* Login */}
         <Route
           path="/login"
           element={
             !currentUser ? <Login /> : <Navigate to="/" replace={true} />
           }
         />
+        {/* Project */}
         <Route
           path="/project/:id"
           element={

@@ -1,10 +1,10 @@
 import { Container } from "@mui/system";
 import { useEffect, useState } from "react";
-import useGlobalContext from "../hooks/useGlobalContext";
+import useGlobalContext from "../../hooks/useGlobalContext";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import TaskDetailsModal from "./TaskDetailsModal";
+import TaskDetailsModal from "../TaskDetailsModal";
 import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 

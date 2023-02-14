@@ -9,7 +9,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { Link } from "react-router-dom";
-import useGlobalContext from "../hooks/useGlobalContext";
+import useGlobalContext from "../../hooks/useGlobalContext";
 
 // Regex
 const usernameRegex = /^[a-z0-9_-]{3,15}$/;

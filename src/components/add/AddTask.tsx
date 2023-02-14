@@ -11,7 +11,8 @@ import TextField from "@mui/material/TextField";
 import AddCardOutlinedIcon from "@mui/icons-material/AddCardOutlined";
 import Container from "@mui/material/Container";
 import { Alert } from "@mui/material";
-import useGlobalContext from "../hooks/useGlobalContext";
+import useGlobalContext from "../../hooks/useGlobalContext";
+import { useParams } from "react-router-dom";
 
 const style = {
   position: "absolute" as "absolute",
@@ -33,31 +34,24 @@ const buttonStyles = {
   zIndex: "1000",
 };
 
-const AddProject = () => {
-  const { currentUser, projects, dispatch } = useGlobalContext({});
+const AddTask = () => {
+  const { currentUser, tasks, dispatch } = useGlobalContext({});
   const [open, setOpen] = React.useState<boolean>(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [error, setError] = React.useState<string>("");
-  const [imageName, setImageName] = React.useState<string>("");
-  const [imageURL, setImageURL] = React.useState<string | ArrayBuffer | null>(
-    ""
-  );
-  const [imageLoaded, setImageLoaded] = React.useState(false);
+  const { id: projectId } = useParams();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const title = data.get("title") as string;
     const description = data.get("description") as string;
-    const image = data.get("imagefile") as Blob;
+    const assignedUsers = data.get("assignedusers") as string;
+    const dueDate = data.get("date") as string;
     setError("");
 
     // Validation
-    if (image.size > 100000) {
-      setError("Image size should be less than 100kb.");
-      return;
-    }
     if (title.length < 3 || title.length > 15) {
       setError("Title should be between 3 to 15 characters long.");
       return;
@@ -66,66 +60,57 @@ const AddProject = () => {
       setError("Description should be between 50 to 150 characters long.");
       return;
     }
-    if (!currentUser) {
-      setError("You are not authorized to perform this task.");
+    if (assignedUsers.length < 3) {
+        setError("Assigning Users must be more than 3 characters long.");
+        return; 
+    }
+    if (!dueDate.length) {
+        setError("Date is required.");
+        return;
+    }
+    if (!/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/.test(dueDate)) {
+      setError("Invalid Date Format.");
       return;
     }
-    if (!imageURL) {
-      setError("Image file not loaded.");
+    if (!currentUser) {
+      setError("You are not authorized to perform this task.");
       return;
     }
 
     // Form structure
     const formData = {
       id: new Date().getTime(),
+      projectId: Number(projectId),
       username: currentUser,
-      project: title,
+      task: title,
       description: description,
-      image: imageURL,
+      assignedUsers: assignedUsers,
+      dueDate: dueDate
     };
 
-    if (!error.length && currentUser && imageURL) {
-      if (projects) {
-        const data = JSON.parse(projects);
+    if (!error.length && currentUser) {
+      if (tasks) {
+        const data = JSON.parse(tasks);
         const newData = [...data, formData];
         localStorage.setItem(
-          "trackier-current-projects",
+          "trackier-current-tasks",
           JSON.stringify(newData)
         );
-        const dispatchData = localStorage.getItem("trackier-current-projects");
+        const dispatchData = localStorage.getItem("trackier-current-tasks");
         if (dispatchData)
-          dispatch({ type: "SET_PROJECTS", payload: dispatchData });
+          dispatch({ type: "SET_TASKS", payload: dispatchData });
         handleClose();
       } else {
         const newData = [formData];
         localStorage.setItem(
-          "trackier-current-projects",
+          "trackier-current-tasks",
           JSON.stringify(newData)
         );
-        const dispatchData = localStorage.getItem("trackier-current-projects");
+        const dispatchData = localStorage.getItem("trackier-current-tasks");
         if (dispatchData)
-          dispatch({ type: "SET_PROJECTS", payload: dispatchData });
+          dispatch({ type: "SET_TASKS", payload: dispatchData });
         handleClose();
       }
-    }
-  };
-
-  const handleImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.files;
-    if (name && name[0]) {
-      setImageName(name[0].name);
-    } else {
-      setImageName("");
-    }
-
-    // Image URL
-    const reader = new FileReader();
-    if (name && name[0]) {
-      reader.readAsDataURL(name[0]);
-      reader.addEventListener("load", () => {
-        setImageURL(reader.result);
-        setImageLoaded(true);
-      });
     }
   };
 
@@ -158,7 +143,7 @@ const AddProject = () => {
                 <AddCardOutlinedIcon />
               </Avatar>
               <Typography component="h1" variant="h5">
-                Add Project
+                Add Task
               </Typography>
               <Box
                 component="form"
@@ -184,36 +169,28 @@ const AddProject = () => {
                   rows={3}
                   name="description"
                   label="Description"
-                  type="description"
                   id="description"
                   autoComplete="description"
                 />
-                <div style={{marginTop: "8px"}}>
-                <label
-                  htmlFor="imagefile"
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    border: "1px solid #333",
-                    padding: "8px 16px",
-                    cursor: "pointer",
-                    color: "#CCC",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {imageName && imageURL ? `${imageName}` : "Add Image"}
-                  <input
-                    type="file"
-                    name="imagefile"
-                    accept="image/*"
-                    hidden
-                    id="imagefile"
-                    onChange={handleImage}
-                  />
-                </label>
-                </div>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="assignedusers"
+                  label="Assign Users"
+                  id="assignedusers"
+                  autoComplete="assignedusers"
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="date"
+                  label="Due Date in DD/MM/YYYY"
+                  id="date"
+                  autoComplete="date"
+                />
+              
                 {/* Error */}
                 {error && (
                   <Alert sx={{ marginTop: "8px" }} severity="error">
@@ -225,7 +202,6 @@ const AddProject = () => {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  disabled={!imageLoaded}
                 >
                   Submit
                 </Button>
@@ -238,4 +214,4 @@ const AddProject = () => {
   );
 };
 
-export default AddProject;
+export default AddTask;

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useGlobalContext from "../hooks/useGlobalContext";
 import { Box } from "@mui/system";
-import TaskList from "../components/TaskList";
-import AddTask from "../components/AddTask";
+import TaskList from "../components/list/TaskList";
+import AddTask from "../components/add/AddTask";
 import Button from "@mui/material/Button";
 
 type ProjectType = {
@@ -48,9 +48,11 @@ const Project = (props: Props) => {
                 paddingRight: "16px",
               }}
             >
+              {/* Back Button */}
               <Link to="/" style={{ textDecoration: "none" }}>
                 <Button variant="outlined">{"<<"} Go Back</Button>
               </Link>
+              
               <Box sx={{ marginTop: "8px" }}>
                 <Typography
                   variant="h2"

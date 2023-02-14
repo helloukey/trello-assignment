@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import SignupForm from "../components/SignupForm";
+import SignupForm from "../components/form/SignupForm";
 
 type Props = {};
 const Signup = (props: Props) => {
