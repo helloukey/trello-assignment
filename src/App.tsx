@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route, Navigate } from "react-router-dom";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Project from "./pages/Project";
+import useGlobalContext from "./hooks/useGlobalContext";
 
-function App() {
+const App = () => {
+  const { currentUser } = useGlobalContext({});
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            currentUser ? <Home /> : <Navigate to="/login" replace={true} />
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            !currentUser ? <Signup /> : <Navigate to="/" replace={true} />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            !currentUser ? <Login /> : <Navigate to="/" replace={true} />
+          }
+        />
+        <Route
+          path="/project/:id"
+          element={
+            currentUser ? <Project /> : <Navigate to="/login" replace={true} />
+          }
+        />
+      </Routes>
     </div>
   );
-}
+};
 
 export default App;
